@@ -1,0 +1,54 @@
+services:
+
+  django:
+    container_name: django_app
+    build:
+      context: ./feedback_service
+      dockerfile: Dockerfile
+    volumes:
+      - ./feedback_service:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=db+postgresql://postgres:admin@postgresdb:5432/feedback_db
+      - POSTGRES_DB=feedback_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_HOST=postgresdb
+      - POSTGRES_PORT=5432
+    depends_on:
+      - postgresdb
+      - redis
+      - celery
+
+  celery:
+    container_name: celery_worker
+    build:
+      context: .
+      dockerfile: ./celery/Dockerfile
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=db+postgresql://postgres:admin@postgresdb:5432/feedback_db
+      - CELERY_RESULT_EXTENDED=true
+      - CELERY_RESULT_PERSISTENT=true
+      - CELERY_TASK_SERIALIZER=json
+    depends_on:
+      - redis
+      - postgresdb
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  postgresdb:
+    container_name: postgres_db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: feedback_db
+    ports:
+      - "5432:5432"
