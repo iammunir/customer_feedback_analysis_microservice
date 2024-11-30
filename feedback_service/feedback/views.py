@@ -1,9 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from celery.result import AsyncResult, GroupResult
+from celery.result import AsyncResult
+from tasks.tasks import process_feedback_task
 from .serializers import FeedbackSerializer
-from .tasks import process_feedback_task
 
 class FeedbackProcessView(APIView):
     def post(self, request):
