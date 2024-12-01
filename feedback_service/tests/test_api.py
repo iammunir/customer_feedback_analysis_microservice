@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 class FeedbackAPITests(APITestCase):
 
-    @patch('feedback.tasks.process_feedback_task.apply_async')
+    @patch('tasks.tasks.process_feedback_task.apply_async')
     def test_valid_feedback_submission(self, mock_task):
         url = reverse('feedback-process')
         mock_task.return_value.id = "mock-task-id"
