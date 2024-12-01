@@ -4,7 +4,7 @@ from sentiment.analysis import analyze, extract_keywords
 @shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
 def sentiment_analysis(feedback):
     try:
-        sentiment = analyze(feedback)
+        sentiment = analyze(feedback["feedback_text"])
         feedback["sentiment"] = sentiment
         return feedback
     except Exception as e:
@@ -14,7 +14,7 @@ def sentiment_analysis(feedback):
 @shared_task(autoretry_for=(Exception,), retry_kwargs={'max_retries': 3}, retry_backoff=True)
 def keyword_extraction(feedback):
     try:
-        feedback["keywords"] = extract_keywords(feedback)
+        feedback["keywords"] = extract_keywords(feedback["feedback_text"])
         return feedback
     except Exception as e:
         feedback["error_extract"] = str(e)      

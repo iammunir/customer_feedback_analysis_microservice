@@ -4,6 +4,9 @@ WORKDIR /app
 
 COPY ./celery/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m nltk.downloader stopwords
+RUN python -m nltk.downloader punkt_tab
+RUN python -m nltk.downloader vader_lexicon
 
 COPY ./celery /app
 
